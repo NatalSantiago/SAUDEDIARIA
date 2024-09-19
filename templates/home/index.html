@@ -1,0 +1,48 @@
+
+{% extends "home/base.html" %}
+
+{% load static %}
+{% load user_agents %}
+
+{% block title %}Últimos Artigos{% endblock %}
+
+{% block content %}
+
+
+    <h2>Últimos artigos</h2>
+    <p>Leia as últimas novidades do Saúde Diária</p>
+
+    <!-- Dados estruturados JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "name": "Saúde Diária",
+      "url": "URL_DO_SEU_SITE",
+      "blogPost": [
+        {% for artigo in artigos %}
+        {
+          "@type": "BlogPosting",
+          "headline": "{{ artigo.titulo }}",
+          "datePublished": "{{ artigo.data_publicacao|date:'Y-m-d' }}",
+          "description": "{{ artigo.resumo_artigo }}",
+          "url": "{{ request.build_absolute_uri|slice:':-1' }}/artigo/{{ artigo.canonical_url }}/"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+      ]
+    }
+    </script>
+
+    <!-- Listando os artigos -->
+    <ul>
+        {% for artigo in artigos %}
+            <li>
+                <h3>{{ artigo.titulo }}</h3>
+                <p>{{ artigo.resumo_artigo }}</p>
+                <p><a href="{% url 'detalhe_artigo' artigo.slug %}">Leia mais</a></p>
+            </li>
+        {% empty %}
+            <p>Nenhum artigo encontrado.</p>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,366 @@
+{% load static %}
+{% load user_agents %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Meta description padrão para SEO -->
+    <meta name="description" content="Saúde Diária oferece dicas práticas e informações sobre saúde e bem-estar, com receitas naturais e práticas de autocuidado para uma vida equilibrada.">
+
+    <!-- Meta tags para otimização em redes sociais e SEO -->
+    <meta name="keywords" content="saúde, bem-estar, autocuidado, remédios naturais, saúde diária, dicas de saúde, vida saudável">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Saúde Diária">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Saúde Diária - Dicas de Saúde e Bem-estar">
+    <meta name="twitter:description" content="Encontre dicas práticas de saúde e bem-estar para uma vida equilibrada e saudável, além de receitas naturais e práticas de autocuidado.">
+    <meta name="twitter:image" content="{% static 'img/Banner.jpg' %}">
+    
+    <!-- Open Graph meta tags para SEO em redes sociais -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Saúde Diária - Dicas de Saúde e Bem-estar">
+    <meta property="og:description" content="Encontre dicas práticas de saúde e bem-estar para uma vida equilibrada e saudável, além de receitas naturais e práticas de autocuidado.">
+    <meta property="og:image" content="{% static 'img/Banner.jpg' %}">
+    <meta property="og:url" content="{% url 'inicio' %}">
+    <meta property="og:site_name" content="Saúde Diária">
+
+    <!-- Bloco dinâmico de meta tags -->
+    {% block metatags %}
+        <meta name="description" content="{{ artigos.0.resumo }}">
+    {% endblock %}
+
+    <!-- Título da página -->
+    <title>Saúde Diária - Dicas de Saúde e Bem-estar</title>
+
+    <!-- Favicon -->
+    <link rel="icon" href="{% static 'img/favicon.ico' %}" type="image/x-icon">
+
+    <!-- Arquivo CSS externo -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Estilos CSS -->
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Estilo do Cabeçalho e Navegação */
+        header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: background-color 0.3s ease;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 10px 20px;
+        }
+
+        /* Logo */
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Ícone de troca de tema */
+        .theme-toggle-icon {
+            margin-left: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Menu de navegação - visível em telas grandes */
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            background-color: transparent; /* Ajuste para evitar a cor branca */
+            transition: background-color 0.3s ease;
+        }
+
+        .nav-menu li {
+            margin-left: 20px;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-menu a:hover {
+            color: #4CAF50;
+        }
+
+        /* Tema Escuro */
+        body.dark-mode {
+            background-color: #0F172A;
+            color: #ffffff;
+        }
+
+        header.dark-mode {
+            background-color: #0F172A;
+            border-color: #444;
+        }
+
+        .nav-menu a.dark-mode {
+            color: #ffffff;
+        }
+
+        .nav-menu a.dark-mode:hover {
+            color: #4CAF50;
+        }
+
+        /* Ajuste da cor de fundo do menu no desktop em modo escuro */
+        body.dark-mode .nav-menu {
+            background-color: #0F172A;
+            color: #ffffff;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            nav {
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 10px;
+            }
+
+            /* Esconder o menu em telas pequenas */
+            .nav-menu {
+                display: none;
+                flex-direction: column;
+                background-color: #f8f8f8; /* Cor de fundo clara para o menu no modo claro */
+                position: absolute;
+                top: 50px;
+                right: 0;
+                width: 50%; /* Menu ocupa metade da tela no celular */
+                z-index: 1001;
+                border: 1px solid #ddd;
+                padding: 10px;
+                transition: opacity 0.3s ease;
+                opacity: 0;
+            }
+
+            .nav-menu.open {
+                display: flex;
+                opacity: 1;
+            }
+
+            .nav-menu li {
+                margin: 10px 0;
+            }
+
+            .nav-menu a {
+                color: #333; /* Cor do texto dos itens do menu */
+            }
+
+            .menu-icon {
+                display: block;
+                font-size: 28px;
+                cursor: pointer;
+                margin-left: auto;
+            }
+
+            .menu-icon.close {
+                content: '❌';
+            }
+        }
+
+        @media (min-width: 769px) {
+            .menu-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header id="site-header">
+    <nav>
+        <div class="logo">
+            SAÚDE DIÁRIA
+            <!-- Ícone de troca de tema logo após o texto "SAÚDE DIÁRIA" -->
+            <div class="theme-toggle-icon" id="theme-icon" aria-label="Trocar tema para escuro">🌞</div>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="{% url 'inicio' %}" class="nav-link">Home</a></li>
+            <li><a href="#" class="nav-link">Artigos</a></li>
+            <li><a href="#" class="nav-link">Sobre</a></li>
+            <li><a href="#" class="nav-link">Contato</a></li>
+        </ul>
+        <div class="menu-icon" id="menu-icon">☰</div> <!-- Ícone de menu no celular -->
+    </nav>
+</header>
+
+<!-- Conteúdo da página -->
+<!-- Conteúdo da página -->
+<main style="padding-top: 80px;">
+
+    <section id="intro-section" style="display: flex; align-items: center; justify-content: space-between; padding: 20px; margin: 0 40px;">
+        <!-- Descrição do Blog -->
+        <div style="flex: 1; font-size: 18px; line-height: 1.6;">
+            <h1>Bem-vindo ao Blog Saúde Diária</h1>
+            <p>Saúde Diária é o seu guia completo para uma vida mais saudável e equilibrada. Em nosso blog, você encontrará uma rica variedade de conteúdos sobre saúde e bem-estar, incluindo dicas práticas para melhorar a qualidade de vida e informações sobre remédios naturais. Explore nossas receitas exclusivas e descubra como ingredientes naturais podem transformar sua saúde. Seja para otimizar sua dieta, adotar práticas de autocuidado ou conhecer mais sobre o poder das plantas medicinais, Saúde Diária é o recurso ideal para quem busca viver de forma mais saudável e consciente.</p>
+        </div>
+    
+        <!-- Banner -->
+        <img src="{% static 'img/Banner.jpg' %}" alt="Banner" style="width: 250px; height: 250px; object-fit: cover; border-radius: 50%; margin-left: 20px;">
+    </section>
+
+    <!-- Seção de Artigos e Notícias -->
+    <section class="content-section">
+        <!-- Seção de Artigos (75% da largura) -->
+        <div class="articles-section">
+            {% block content %}
+                <!-- O conteúdo do artigo será injetado aqui -->
+            {% endblock %}
+        </div>
+
+        <!-- Seção de Notícias (25% da largura) -->
+        <aside class="news-section">
+            <h2>Notícias</h2>
+            <!-- Aqui você pode listar as notícias -->
+        </aside>
+    </section>
+
+    <style>
+        /* Estilo para a seção de artigos e notícias */
+        .content-section {
+            display: flex;
+            padding: 20px;
+            background-color: #FAFAFA;
+        }
+
+        .articles-section {
+            flex: 3;
+            padding-right: 20px;
+            margin-top: 95px; /* Aumentando o espaçamento superior */
+            text-align: center; /* Centralizando o texto */
+        }
+
+        .news-section {
+            flex: 1;
+            padding-left: 20px;
+            border-left: 1px solid #ddd;
+            text-align: center; /* Centralizando o texto */
+        }
+
+        /* Ajustes para o tema dark */
+        body.dark-mode .content-section {
+            background-color: #1E293B;
+        }
+
+        body.dark-mode .news-section, 
+        body.dark-mode .articles-section {
+            color: #ffffff;
+        }
+
+        body.dark-mode .news-section {
+            border-color: #444;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .content-section {
+                flex-direction: column;
+            }
+
+            .articles-section, .news-section {
+                width: 100%;
+            }
+
+            .news-section {
+                margin-top: 20px;
+                border-left: none;
+                border-top: 1px solid #ddd;
+                padding-top: 20px;
+            }
+
+            /* Ajuste para imagem no modo celular */
+            section {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            img {
+                order: -1; /* Move a imagem para cima do texto no celular */
+                margin-left: 0;
+                margin-top: 20px;
+            }
+        }
+    </style>
+
+</main>
+
+<script>
+    // Alternar tema claro e escuro
+    const themeToggle = document.getElementById('theme-icon');
+    const body = document.body;
+    const header = document.getElementById('site-header');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const menuIcon = document.getElementById('menu-icon');
+    const navMenu = document.querySelector('.nav-menu');
+
+    // Verifica se o tema foi salvo no localStorage
+    const currentTheme = localStorage.getItem('theme');
+    if (currentTheme === 'dark') {
+        body.classList.add('dark-mode');
+        header.classList.add('dark-mode');
+        themeToggle.textContent = '🌜'; // Ícone de lua para tema escuro
+        navLinks.forEach(link => link.classList.add('dark-mode'));
+    }
+
+    themeToggle.addEventListener('click', function () {
+        body.classList.toggle('dark-mode');
+        header.classList.toggle('dark-mode');
+        navLinks.forEach(link => link.classList.toggle('dark-mode'));
+
+        if (body.classList.contains('dark-mode')) {
+            themeToggle.textContent = '🌜'; // Lua para o tema escuro
+            localStorage.setItem('theme', 'dark');
+        } else {
+            themeToggle.textContent = '🌞'; // Sol para o tema claro
+            localStorage.setItem('theme', 'light');
+        }
+    });
+
+    // Alternar menu
+    menuIcon.addEventListener('click', function () {
+        navMenu.classList.toggle('open');
+        if (navMenu.classList.contains('open')) {
+            menuIcon.textContent = '❌'; // "X" quando o menu está aberto
+        } else {
+            menuIcon.textContent = '☰'; // Ícone de menu quando o menu está fechado
+        }
+    });
+
+    // Fechar o menu ao retirar o mouse
+    navMenu.addEventListener('mouseleave', function () {
+        navMenu.classList.remove('open');
+        menuIcon.textContent = '☰'; // Ícone de menu quando o menu está fechado
+    });
+</script>
+
+</body>
+</html>

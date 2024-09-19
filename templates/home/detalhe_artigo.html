@@ -1,0 +1,10 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+    <article>
+        <p>Publicado em: {{ artigo.data_publicacao|date:"d M, Y" }}</p>
+        <div>
+            {{ artigo.descricao_artigo|safe }}
+        </div>
+    </article>
+{% endblock %}
